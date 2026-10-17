@@ -89,43 +89,54 @@ footer{border-top:1px solid #383830;padding:25px 7%;color:var(--muted);font-size
 </main>
 <footer>AUREN AI &nbsp; — &nbsp; A MORE CONSIDERED WAY TO DESIGN</footer>
 <script>
-let speaking = false;
-function stopSpeech(){
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-  speaking = false;
-  document.getElementById('audioStatus').textContent = 'Audio stopped.';
-  document.getElementById('audio').textContent = '▶ Play narration';
+const audioFile = new Audio(
+  "./ElevenLabs_2026-10-17T12_56_12_James_-_Professional_British_Male_pvc_sp90_s56_sb66_v4.mp3"
+);
+
+audioFile.preload = "auto";
+
+const audioButton = document.getElementById("audio");
+const stopButton = document.getElementById("stop");
+const playButton = document.getElementById("play");
+const audioStatus = document.getElementById("audioStatus");
+
+function playNarration() {
+  audioFile.play()
+    .then(() => {
+      audioButton.textContent = "▶ Playing…";
+      audioStatus.textContent = "Playing your British voice narration.";
+    })
+    .catch((error) => {
+      audioStatus.textContent =
+        "Audio could not play. Check the MP3 filename and try again.";
+      console.error("Audio playback error:", error);
+    });
 }
-document.getElementById('audio').addEventListener('click',()=>{
-  if (!('speechSynthesis' in window)) {
-    document.getElementById('audioStatus').textContent = 'Speech playback is not supported in this browser.';
-    return;
-  }
-  stopSpeech();
-  const text = 'Welcome to your AUREN residence. From the considered materials to the natural light that moves through each space, every detail has been imagined around the way you want to live.';
-  const utterance = new SpeechSynthesisUtterance(text);
-utterance.lang = 'en-GB';
-utterance.rate = 0.92;
-utterance.pitch = 0.92;
-utterance.volume = 1;
-  utterance.onstart = () => {
-    speaking = true;
-    document.getElementById('audioStatus').textContent = 'Playing spoken narration…';
-    document.getElementById('audio').textContent = '▶ Playing…';
-  };
-  utterance.onend = () => {
-    speaking = false;
-    document.getElementById('audioStatus').textContent = 'Narration finished.';
-    document.getElementById('audio').textContent = '▶ Play narration';
-  };
-  window.speechSynthesis.speak(utterance);
+
+function stopNarration() {
+  audioFile.pause();
+  audioFile.currentTime = 0;
+  audioButton.textContent = "▶ Play narration";
+  audioStatus.textContent = "Audio stopped.";
+}
+
+audioButton.addEventListener("click", playNarration);
+playButton.addEventListener("click", playNarration);
+stopButton.addEventListener("click", stopNarration);
+
+audioFile.addEventListener("ended", () => {
+  audioButton.textContent = "▶ Play narration";
+  audioStatus.textContent = "Narration finished.";
 });
-document.getElementById('stop').addEventListener('click',stopSpeech);
-document.getElementById('play').addEventListener('click',()=>{
-  document.getElementById('audioStatus').textContent = 'This is a still-image preview. The cinematic video will be connected in a later step.';
+
+audioFile.addEventListener("error", () => {
+  audioStatus.textContent =
+    "Unable to load the MP3. Please check the filename.";
 });
-document.getElementById('generate').addEventListener('click',()=>{
-  document.getElementById('generationStatus').textContent = 'Demo only: connect a secure video-generation service to create your own house tour.';
+
+document.getElementById("generate").addEventListener("click", () => {
+  document.getElementById("generationStatus").textContent =
+    "Demo mode: full AI house-tour generation is not connected yet.";
 });
 </script>
 </body>
