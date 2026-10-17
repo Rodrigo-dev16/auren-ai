@@ -1,1 +1,131 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AUREN AI | Private House Tour</title>
+<style>
+:root{--bg:#11120f;--panel:#1b1c18;--gold:#c8ad7f;--cream:#f4efe5;--muted:#aaa89f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--cream);font-family:Arial,sans-serif}
+header{padding:24px 7%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #383830}
+.logo{font-size:23px;letter-spacing:7px;font-weight:600}
+.logo span{display:block;font-size:9px;letter-spacing:4px;color:var(--gold);margin-top:6px}
+a{color:var(--gold);text-decoration:none}
+main{max-width:1120px;margin:auto;padding:55px 24px}
+.eyebrow{color:var(--gold);letter-spacing:3px;font-size:11px;text-transform:uppercase}
+h1{font-family:Georgia,serif;font-size:clamp(38px,6vw,68px);font-weight:400;line-height:1.05;margin:18px 0}
+.intro{color:var(--muted);line-height:1.8;max-width:650px}
+.layout{display:grid;grid-template-columns:1.4fr 1fr;gap:22px;margin-top:36px}
+.panel{background:var(--panel);border:1px solid #393930;border-radius:5px;overflow:hidden}
+.preview{min-height:340px;background:linear-gradient(0deg,rgba(0,0,0,.85),transparent 65%),url('https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1400&q=85') center/cover;display:flex;flex-direction:column;justify-content:space-between;padding:24px}
+.tag{font-size:10px;letter-spacing:2px;color:#fff;background:#111b;padding:9px 12px;width:max-content}
+.play{align-self:center;border:1px solid #fff;border-radius:50%;width:64px;height:64px;background:#ffffff20;color:white;font-size:24px;cursor:pointer}
+.preview-bottom h2{font:30px Georgia,serif;margin:0 0 8px}
+.preview-bottom p{font-size:12px;color:#ddd}
+.details{padding:25px}
+.details h2{font:25px Georgia,serif;margin:10px 0}
+.muted{color:var(--muted);font-size:13px;line-height:1.7}
+hr{border:0;border-top:1px solid #393930;margin:22px 0}
+button{font:inherit;cursor:pointer}
+.primary{width:100%;background:var(--gold);color:#171711;border:0;padding:15px;font-weight:bold;margin-top:14px}
+.secondary{background:transparent;border:1px solid #55564a;color:var(--cream);padding:11px 14px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+.status{color:var(--gold);font-size:12px;margin-top:12px;min-height:18px}
+.script{font:16px/1.8 Georgia,serif;color:#e5dfd2}
+footer{border-top:1px solid #383830;padding:25px 7%;color:var(--muted);font-size:11px;letter-spacing:1px}
+@media(max-width:720px){.layout{grid-template-columns:1fr}main{padding-top:35px}.preview{min-height:290px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">AUREN AI<span>ARCHITECTURE · REIMAGINED</span></div>
+  <a href="./">Back to Studio ↗</a>
+</header>
+<main>
+  <div class="eyebrow">Your vision, brought to life</div>
+  <h1>Step inside<br>your future home.</h1>
+  <p class="intro">Experience your design through a cinematic walkthrough, guided by a virtual property presenter with spoken narration.</p>
+  <div class="layout">
+    <section class="panel">
+      <div class="preview">
+        <span class="tag">AUREN PRIVATE TOUR · PREVIEW</span>
+        <button class="play" id="play" aria-label="Play preview">▶</button>
+        <div class="preview-bottom">
+          <h2>The Art of Living</h2>
+          <p>Contemporary residence · Concept preview</p>
+        </div>
+      </div>
+      <div class="details">
+        <div class="eyebrow">Audio experience</div>
+        <h2>Your personal guided tour</h2>
+        <p class="muted">Play a sample of the spoken tour narration. Audio generation for your own house design will be connected in the next stage.</p>
+        <div class="controls">
+          <button class="secondary" id="audio">▶ Play narration</button>
+          <button class="secondary" id="stop">■ Stop audio</button>
+        </div>
+        <p class="status" id="audioStatus" aria-live="polite">Narration ready.</p>
+      </div>
+    </section>
+    <aside class="panel details">
+      <div class="eyebrow">Your virtual presenter</div>
+      <h2>A considered introduction.</h2>
+      <p class="muted">A future version will feature a lifelike AI host introducing your home, followed by cinematic views of each room in your saved design.</p>
+      <hr>
+      <div class="eyebrow">Narration sample</div>
+      <p class="script">“Welcome to your AUREN residence. From the considered materials to the natural light that moves through each space, every detail has been imagined around the way you want to live.”</p>
+      <hr>
+      <p class="muted">Planned tour sequence</p>
+      <p>01 &nbsp; Exterior arrival</p>
+      <p>02 &nbsp; Living spaces</p>
+      <p>03 &nbsp; Kitchen and dining</p>
+      <p>04 &nbsp; Private bedrooms</p>
+      <p>05 &nbsp; Garden and final view</p>
+      <button class="primary" id="generate">Generate my AI house tour</button>
+      <p class="status" id="generationStatus" aria-live="polite">Demo mode · Video generation not connected yet.</p>
+    </aside>
+  </div>
+</main>
+<footer>AUREN AI &nbsp; — &nbsp; A MORE CONSIDERED WAY TO DESIGN</footer>
+<script>
+let speaking = false;
+function stopSpeech(){
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  speaking = false;
+  document.getElementById('audioStatus').textContent = 'Audio stopped.';
+  document.getElementById('audio').textContent = '▶ Play narration';
+}
+document.getElementById('audio').addEventListener('click',()=>{
+  if (!('speechSynthesis' in window)) {
+    document.getElementById('audioStatus').textContent = 'Speech playback is not supported in this browser.';
+    return;
+  }
+  stopSpeech();
+  const text = 'Welcome to your AUREN residence. From the considered materials to the natural light that moves through each space, every detail has been imagined around the way you want to live.';
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-GB';
+  utterance.rate = 0.88;
+  utterance.onstart = () => {
+    speaking = true;
+    document.getElementById('audioStatus').textContent = 'Playing spoken narration…';
+    document.getElementById('audio').textContent = '▶ Playing…';
+  };
+  utterance.onend = () => {
+    speaking = false;
+    document.getElementById('audioStatus').textContent = 'Narration finished.';
+    document.getElementById('audio').textContent = '▶ Play narration';
+  };
+  window.speechSynthesis.speak(utterance);
+});
+document.getElementById('stop').addEventListener('click',stopSpeech);
+document.getElementById('play').addEventListener('click',()=>{
+  document.getElementById('audioStatus').textContent = 'This is a still-image preview. The cinematic video will be connected in a later step.';
+});
+document.getElementById('generate').addEventListener('click',()=>{
+  document.getElementById('generationStatus').textContent = 'Demo only: connect a secure video-generation service to create your own house tour.';
+});
+</script>
+</body>
+</html>
+
