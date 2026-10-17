@@ -104,8 +104,10 @@ document.getElementById('audio').addEventListener('click',()=>{
   stopSpeech();
   const text = 'Welcome to your AUREN residence. From the considered materials to the natural light that moves through each space, every detail has been imagined around the way you want to live.';
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'en-GB';
-  utterance.rate = 0.88;
+utterance.lang = 'en-GB';
+utterance.rate = 0.92;
+utterance.pitch = 0.92;
+utterance.volume = 1;
   utterance.onstart = () => {
     speaking = true;
     document.getElementById('audioStatus').textContent = 'Playing spoken narration…';
